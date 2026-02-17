@@ -1,0 +1,53 @@
+# ==========================================================
+# .gitignore for AVR embedded C project
+# ----------------------------------------------------------
+# Goal: keep generated/local files out of Git, keep source
+# code and important project config files tracked.
+# ==========================================================
+
+# -------------------------
+# 1) Build output files
+# -------------------------
+# Object and dependency files generated during compilation
+*.o
+*.d
+
+# Linker and firmware output files
+*.elf
+*.hex
+*.eep
+*.map
+*.lss
+*.lst
+*.sym
+
+# -------------------------
+# 2) Generic temporary files
+# -------------------------
+# Vim/Neovim swap files and backup files
+*.swp
+*.swo
+*~
+
+# macOS Finder metadata (harmless but noisy)
+.DS_Store
+
+# -------------------------
+# 3) Logs and local caches
+# -------------------------
+# Runtime/build logs and local cache folders
+*.log
+.cache/
+
+# -------------------------
+# 4) VS Code files
+# -------------------------
+# Ignore personal workspace state, but keep shared settings.
+.vscode/
+
+# -------------------------
+# 5) Notes
+# -------------------------
+# If a file was already tracked before adding rules here,
+# Git will continue tracking it. To stop tracking once:
+#   git rm --cached <file>

@@ -1,0 +1,7 @@
+CompileFlags:
+  CompilationDatabase: Ancestors
+  Compiler: avr-gcc
+  Add:
+    - -mmcu=atmega328p
+    - -DF_CPU=16000000UL
+    - -Iheader

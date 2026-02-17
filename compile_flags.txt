@@ -1,0 +1,3 @@
+-mmcu=atmega328p
+-Iheader/
+-DF_CPU=16000000UL
