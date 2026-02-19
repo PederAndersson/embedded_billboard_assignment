@@ -1,3 +1,5 @@
 -mmcu=atmega328p
 -Iheader/
 -DF_CPU=16000000UL
+-std=c11 
+--target=avr
