@@ -120,7 +120,7 @@ void lcd_scroll_right(void) {
     lcd_command(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVERIGHT);
 }
 
-void stringCopy(uint8_t buffer, char* string){
+void lcd_stringCopy(uint8_t buffer, char* string){
     uint8_t i = 0;
     if (buffer == 1){
 
@@ -189,7 +189,7 @@ void lcd_blink_row(uint8_t row) {
         blink = 0;
     }else {
         for (uint8_t i = 0; i < LCD_COL_COUNT; i++){
-            lcd_write(shift_buffer1[i]);
+            lcd_write(shift_buffer0[i]);
         }
         blink = 0;
     }

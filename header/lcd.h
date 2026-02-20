@@ -74,7 +74,7 @@ void lcd_disable_cursor(void);
 void lcd_scroll_left(void);
 void lcd_scroll_right(void);
 
-void stringCopy(uint8_t buffer, char* string);
+void lcd_stringCopy(uint8_t buffer, char* string);
 
 void lcd_scroll_left_row(uint8_t row);
 void lcd_scroll_right_row(uint8_t row);
