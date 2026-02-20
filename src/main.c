@@ -6,7 +6,7 @@
 #include "utils.h"
 
 #define ms_second 1000
-#define switch_mode 4500
+#define switch_mode 3000
 #define switch_effect 1000
 
 client test = {
@@ -34,9 +34,9 @@ int main(void) {
     uint32_t seconds = 0;
     uint32_t effectTime = 0;
     uint32_t modeTime = 0;
-    manager_config(&test, &mgr);
+    //manager_config(&test, &mgr);
     manager_config(&test2, &mgr);
-    mode = TEXT;
+    mode = ODD_EVEN;
     effect = PLAIN_TEXT;
     
     sei();
@@ -44,14 +44,14 @@ int main(void) {
     while(1) {
         uint32_t current = millis();
         if (current - previousSeconds >= ms_second){ seconds++; previousSeconds = current;}
-        if (current - modeTime >= switch_mode){ next_mode(&mode); modeTime = current;}
-        if (mode == TEXT && current - effectTime >= switch_effect){
-            next_effect(&effect);
-
-            effectTime = current;
-            }
-        else if (mode == ODD_EVEN){
-            odd_even(seconds, mgr.client_list[1]);
+        // if (current - modeTime >= switch_mode){ next_mode(&mode); modeTime = current;}
+        // if (mode == TEXT && current - effectTime >= switch_effect){
+        //     next_effect(&effect);
+        //     effect_output(effect, &mgr);
+        //     effectTime = current;
+        //     }
+        if (mode == ODD_EVEN){
+            odd_even(seconds, &test2, ADD_LENGTH);
         }
     }
 

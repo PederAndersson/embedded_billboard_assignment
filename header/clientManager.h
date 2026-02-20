@@ -22,13 +22,13 @@ enum Effect {
 };
 
 typedef struct Client {
-    char* client_name[CLIENTNAME];
-    char* billboards[NUMBER_ADS][ADD_LENGTH];
+    char* client_name[CLIENTNAME+1];
+    char* billboards[NUMBER_ADS+1][ADD_LENGTH+1];
     uint32_t price;
 } client;
 
 typedef struct Client_manager {
-    client* client_list[CLIENTS];
+    client* client_list[CLIENTS+1];
     client previous_client;
     uint32_t total_income;
 

@@ -30,44 +30,6 @@
       "-mmcu=atmega328p",
       "-c",
       "-o",
-      "src/systemTick.o",
-      "src/systemTick.c"
-    ],
-    "directory": "/home/peder/school/embedded/course_assignment",
-    "file": "/home/peder/school/embedded/course_assignment/src/systemTick.c",
-    "output": "/home/peder/school/embedded/course_assignment/src/systemTick.o"
-  },
-  {
-    "arguments": [
-      "/usr/lib64/ccache/avr-gcc",
-      "-mmcu=atmega328p",
-      "-Os",
-      "-Wall",
-      "-Wextra",
-      "-Iheader/",
-      "-DF_CPU=16000000UL",
-      "-mmcu=atmega328p",
-      "-c",
-      "-o",
-      "src/lcd.o",
-      "src/lcd.c"
-    ],
-    "directory": "/home/peder/school/embedded/course_assignment",
-    "file": "/home/peder/school/embedded/course_assignment/src/lcd.c",
-    "output": "/home/peder/school/embedded/course_assignment/src/lcd.o"
-  },
-  {
-    "arguments": [
-      "/usr/lib64/ccache/avr-gcc",
-      "-mmcu=atmega328p",
-      "-Os",
-      "-Wall",
-      "-Wextra",
-      "-Iheader/",
-      "-DF_CPU=16000000UL",
-      "-mmcu=atmega328p",
-      "-c",
-      "-o",
       "src/clientManager.o",
       "src/clientManager.c"
     ],

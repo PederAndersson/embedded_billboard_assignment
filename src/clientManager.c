@@ -35,10 +35,27 @@ void next_effect(enum Effect *e){
 
 void effect_output(enum Effect e, client_manager *mgr){
     switch(e){
-        case PLAIN_TEXT:{}
-        
-        case SCROLL: {}
-
-        case BLINK: {}
+        case PLAIN_TEXT:{
+            lcd_set_cursor(0, 0);
+            lcd_puts(*mgr->client_list[0]->client_name);
+            lcd_set_cursor(0, 1);
+            lcd_puts(*mgr->client_list[0]->billboards[0]);
+            break;
+        }
+        case SCROLL: {
+            lcd_set_cursor(0, 0);
+            lcd_puts(*mgr->client_list[0]->client_name);
+            lcd_set_cursor(0, 1);
+            lcd_stringCopy(1, *mgr->client_list[0]->billboards[1]);
+            lcd_scroll_left_row(1);
+            break;
+        }
+        case BLINK: {
+            lcd_set_cursor(0, 0);
+            lcd_puts(*mgr->client_list[0]->client_name);
+            lcd_stringCopy(0, *mgr->client_list[0]->billboards[2]);
+            lcd_blink_row(1);
+            break;
+        }
     }
 }
