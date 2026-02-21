@@ -6,8 +6,8 @@
 #include "utils.h"
 
 #define second_ms 1000
-#define switch_mode 3000
-#define switch_effect 5000
+#define switch_mode 12000
+#define switch_effect 4000
 
 
 client test = {
@@ -31,30 +31,35 @@ int main(void) {
 
     Timer0_init(); 
     lcd_init();
-    uint32_t previousSeconds = 0;
+    uint32_t previous_seconds = 0;
     uint32_t seconds = 0;
-    uint32_t effectTime = 0;
-    uint32_t modeTime = 0;
-    uint32_t scrollTime = 0;
+    uint32_t next_effect_switch = 0;
+    uint32_t mode_time = 0;
+    uint32_t effect_time = 0;
+    uint32_t effect_duration = 0;
+
     manager_config(&test, &mgr);
-    //manager_config(&test2, &mgr);
-    lcd_stringCopy(0, mgr.client_list[0]->client_name);
-    lcd_stringCopy(1, mgr.client_list[0]->billboards[0]);
+    manager_config(&test2, &mgr);
     mode = TEXT;
     effect = PLAIN_TEXT;
     
     sei();
 
     while(1) {
-        uint32_t current = millis();
-        lcd_printf(0, mgr.client_list[0]->client_name);
-        lcd_printf(1, mgr.client_list[0]->billboards[0]);
-        if (current - previousSeconds >= second_ms){ seconds++; previousSeconds = current;}
-        //if (current - modeTime >= switch_mode){ next_mode(&mode); modeTime = current;}
-   
-        // if (mode == ODD_EVEN){
-        //     odd_even(seconds, &test2, ADD_LENGTH);
-        // }
+        uint32_t current_time = millis();
+        if (current_time - previous_seconds >= second_ms){ seconds++; previous_seconds = current_time;}
+        if (current_time - mode_time >= switch_mode){ next_mode(&mode); mode_time = current_time;}
+        if (mode == TEXT && current_time - next_effect_switch >= switch_effect){
+            next_effect(&effect, &mgr);
+            next_effect_switch = current_time;
+        }
+        if (mode == TEXT && current_time - effect_time >= effect_duration){
+            effect_output(effect, &mgr, &effect_duration);
+            effect_time = current_time;
+        }
+        if (mode == ODD_EVEN){
+            odd_even(seconds, &test2, LCD_COL_COUNT);
+        }
     }
 
     return 0;

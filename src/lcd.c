@@ -184,12 +184,12 @@ void lcd_blink_row(uint8_t row) {
         blink = 1;
     } else if (row == 0){
         for (uint8_t i = 0; i < LCD_COL_COUNT; i++){
-            lcd_write(shift_buffer1[i]);
+            lcd_write(shift_buffer0[i]);
         }
         blink = 0;
     }else {
         for (uint8_t i = 0; i < LCD_COL_COUNT; i++){
-            lcd_write(shift_buffer1[i]);
+            lcd_write(shift_buffer0[i]);
         }
         blink = 0;
     }

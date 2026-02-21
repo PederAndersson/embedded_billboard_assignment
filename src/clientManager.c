@@ -3,6 +3,8 @@
 #include "lcd.h"
 
 static uint8_t size = 0;
+static uint32_t scroll_ms = SCROLL_MS;
+static uint32_t blink_ms = BLINK_MS;
 
 static uint32_t total_price(client *c, client_manager * mgr){
         return mgr->total_income += c->price;
@@ -25,37 +27,41 @@ void next_mode(enum Mode *m){
     }
 }
 
-void next_effect(enum Effect *e){
+void next_effect(enum Effect *e, client_manager* mgr){
     switch (*e){
-        case PLAIN_TEXT: {*e = SCROLL; break;}
-        case SCROLL: {*e = BLINK; break;}
+        case PLAIN_TEXT: {
+            lcd_stringCopy(1, mgr->client_list[0]->billboards[1]);
+            *e = SCROLL;
+            break;}
+        case SCROLL: {
+            lcd_stringCopy(0, mgr->client_list[0]->billboards[2]);
+            *e = BLINK;
+            break;}
         case BLINK: {*e = PLAIN_TEXT; break;}
     }
 }
 
-void effect_output(enum Effect e, client_manager *mgr, uint32_t time){
-    uint32_t previous = 0;
+void effect_output(enum Effect e, client_manager *mgr, uint32_t *out){
 
     switch(e){
         case PLAIN_TEXT:{
-            lcd_set_cursor(0, 0);
-            lcd_puts(mgr->client_list[0]->client_name);
-            lcd_set_cursor(0, 1);
-            lcd_puts(mgr->client_list[0]->billboards[0]);
+            lcd_printf(0, mgr->client_list[0]->client_name);
+            lcd_printf(1, mgr->client_list[0]->billboards[0]);
+            *out = 0;  
             break;
         }
         case SCROLL: {
-            lcd_set_cursor(0, 0);
-            lcd_puts(mgr->client_list[0]->client_name);
-            lcd_set_cursor(0, 1);
-            lcd_stringCopy(1, mgr->client_list[0]->billboards[1]);
+            lcd_printf(0,mgr->client_list[0]->client_name);
+            lcd_scroll_left_row(1);
+            *out = scroll_ms;
             break;
         }
         case BLINK: {
-            lcd_set_cursor(0, 0);
-            lcd_puts(mgr->client_list[0]->client_name);
-            lcd_stringCopy(0, mgr->client_list[0]->billboards[2]);
+            lcd_printf(0,mgr->client_list[0]->client_name);
+            lcd_blink_row(1);
+            *out = blink_ms;
             break;
         }
     }
+
 }

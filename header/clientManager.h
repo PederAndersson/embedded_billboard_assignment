@@ -41,8 +41,8 @@ typedef struct Client_manager {
 void manager_config(client *c, client_manager* mgr);
 void next_client();
 void next_mode(enum Mode *m);
-void next_effect(enum Effect *e);
-void effect_output(enum Effect e, client_manager* mgr, uint32_t time);
+void next_effect(enum Effect *e, client_manager* mgr);
+void effect_output(enum Effect e, client_manager* mgr, uint32_t *out);
 
 
 #endif
