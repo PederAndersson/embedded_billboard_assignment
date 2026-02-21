@@ -184,12 +184,12 @@ void lcd_blink_row(uint8_t row) {
         blink = 1;
     } else if (row == 0){
         for (uint8_t i = 0; i < LCD_COL_COUNT; i++){
-            lcd_write(shift_buffer0[i]);
+            lcd_write(shift_buffer1[i]);
         }
         blink = 0;
     }else {
         for (uint8_t i = 0; i < LCD_COL_COUNT; i++){
-            lcd_write(shift_buffer0[i]);
+            lcd_write(shift_buffer1[i]);
         }
         blink = 0;
     }
@@ -236,7 +236,8 @@ void lcd_puts(char *string) {
     }
 }
 
-void lcd_printf(char *format, ...) {
+void lcd_printf(uint8_t row, char *format, ...) {
+    lcd_set_cursor(0, row);
     va_list args;
 
     va_start(args, format);
