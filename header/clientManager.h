@@ -1,12 +1,15 @@
 #ifndef CLIENTMANAGER_H
 #define CLIENTMANAGER_H
 
+#include "lcd.h"
 #include <stdint.h>
 
 #define CLIENTNAME 50
 #define NUMBER_ADS 3
-#define ADD_LENGTH 16
+
 #define CLIENTS 5
+#define SCROLL_MS 200
+#define BLINK_MS 350
 
 
 
@@ -22,8 +25,8 @@ enum Effect {
 };
 
 typedef struct Client {
-    char* client_name[CLIENTNAME+1];
-    char* billboards[NUMBER_ADS+1][ADD_LENGTH+1];
+    char client_name[CLIENTNAME+1];
+    char billboards[NUMBER_ADS+1][LCD_COL_COUNT+1];
     uint32_t price;
 } client;
 
@@ -39,7 +42,7 @@ void manager_config(client *c, client_manager* mgr);
 void next_client();
 void next_mode(enum Mode *m);
 void next_effect(enum Effect *e);
-void effect_output(enum Effect e, client_manager* mgr);
+void effect_output(enum Effect e, client_manager* mgr, uint32_t time);
 
 
 #endif

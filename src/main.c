@@ -5,9 +5,10 @@
 #include "clientManager.h"
 #include "utils.h"
 
-#define ms_second 1000
+#define second_ms 1000
 #define switch_mode 3000
-#define switch_effect 1000
+#define switch_effect 5000
+
 
 client test = {
     .client_name = {"Svarte Petter"},
@@ -34,25 +35,26 @@ int main(void) {
     uint32_t seconds = 0;
     uint32_t effectTime = 0;
     uint32_t modeTime = 0;
-    //manager_config(&test, &mgr);
-    manager_config(&test2, &mgr);
-    mode = ODD_EVEN;
+    uint32_t scrollTime = 0;
+    manager_config(&test, &mgr);
+    //manager_config(&test2, &mgr);
+    lcd_stringCopy(0, mgr.client_list[0]->client_name);
+    lcd_stringCopy(1, mgr.client_list[0]->billboards[0]);
+    mode = TEXT;
     effect = PLAIN_TEXT;
     
     sei();
 
     while(1) {
         uint32_t current = millis();
-        if (current - previousSeconds >= ms_second){ seconds++; previousSeconds = current;}
-        // if (current - modeTime >= switch_mode){ next_mode(&mode); modeTime = current;}
-        // if (mode == TEXT && current - effectTime >= switch_effect){
-        //     next_effect(&effect);
-        //     effect_output(effect, &mgr);
-        //     effectTime = current;
-        //     }
-        if (mode == ODD_EVEN){
-            odd_even(seconds, &test2, ADD_LENGTH);
-        }
+        lcd_printf(0, mgr.client_list[0]->client_name);
+        lcd_printf(1, mgr.client_list[0]->billboards[0]);
+        if (current - previousSeconds >= second_ms){ seconds++; previousSeconds = current;}
+        //if (current - modeTime >= switch_mode){ next_mode(&mode); modeTime = current;}
+   
+        // if (mode == ODD_EVEN){
+        //     odd_even(seconds, &test2, ADD_LENGTH);
+        // }
     }
 
     return 0;
