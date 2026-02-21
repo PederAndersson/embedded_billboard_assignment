@@ -4,15 +4,15 @@
 #include "lcd.h"
 #include "clientManager.h"
 #include "utils.h"
+#include <stdint.h>
 
 #define second_ms 1000
 #define switch_mode 12000
 #define switch_effect 4000
 
-
 client test = {
     .client_name = {"Svarte Petter"},
-    .billboards = {{"hejsan"}, {"tjofräs"}, {"tomte"}},
+    .billboards = {{"hejsan"}, {"åäöÅÄÖ"}, {"tomte"}},
     .price = 5000
 };
 
@@ -46,20 +46,8 @@ int main(void) {
     sei();
 
     while(1) {
-        uint32_t current_time = millis();
-        if (current_time - previous_seconds >= second_ms){ seconds++; previous_seconds = current_time;}
-        if (current_time - mode_time >= switch_mode){ next_mode(&mode); mode_time = current_time;}
-        if (mode == TEXT && current_time - next_effect_switch >= switch_effect){
-            next_effect(&effect, &mgr);
-            next_effect_switch = current_time;
-        }
-        if (mode == TEXT && current_time - effect_time >= effect_duration){
-            effect_output(effect, &mgr, &effect_duration);
-            effect_time = current_time;
-        }
-        if (mode == ODD_EVEN){
-            odd_even(seconds, &test2, LCD_COL_COUNT);
-        }
+    uint32_t current_time = millis(); 
+        lcd_printf(1, mgr.client_list[0]->billboards[1]);
     }
 
     return 0;

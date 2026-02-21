@@ -87,7 +87,7 @@ void lcd_set_right_to_left(void);
 void lcd_enable_autoscroll(void);
 void lcd_disable_autoscroll(void);
 
-void lcd_create_char(uint8_t location, uint8_t *charmap);
+void lcd_create_char(uint8_t location, const uint8_t *charmap);
 
 void lcd_set_cursor(uint8_t col, uint8_t row);
 
