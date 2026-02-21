@@ -1,17 +1,21 @@
 [
-	{
-		"directory": "/home/peder/school/embedded/course_assignment",
-		"file": "src/main.c",
-		"command": "avr-gcc -mmcu=atmega328p -DF_CPU=16000000UL -Iheader -c src/main.c"
-	},
-	{
-		"directory": "/home/peder/school/embedded/course_assignment",
-		"file": "src/lcd.c",
-		"command": "avr-gcc -mmcu=atmega328p -DF_CPU=16000000UL -Iheader -c src/lcd.c"
-	},
-	{
-		"directory": "/home/peder/school/embedded/course_assignment",
-		"file": "src/systemTick.c",
-		"command": "avr-gcc -mmcu=atmega328p -DF_CPU=16000000UL -Iheader -c src/systemTick.c"
-	}
+  {
+    "arguments": [
+      "/usr/lib64/ccache/avr-gcc",
+      "-mmcu=atmega328p",
+      "-Os",
+      "-Wall",
+      "-Wextra",
+      "-Iheader/",
+      "-DF_CPU=16000000UL",
+      "-mmcu=atmega328p",
+      "-c",
+      "-o",
+      "src/main.o",
+      "src/main.c"
+    ],
+    "directory": "/home/peder/school/embedded/course_assignment",
+    "file": "/home/peder/school/embedded/course_assignment/src/main.c",
+    "output": "/home/peder/school/embedded/course_assignment/src/main.o"
+  }
 ]

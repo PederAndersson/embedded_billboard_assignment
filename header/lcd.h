@@ -74,7 +74,7 @@ void lcd_disable_cursor(void);
 void lcd_scroll_left(void);
 void lcd_scroll_right(void);
 
-void stringCopy(uint8_t buffer, char* string);
+void lcd_stringCopy(uint8_t buffer, char* string);
 
 void lcd_scroll_left_row(uint8_t row);
 void lcd_scroll_right_row(uint8_t row);
@@ -87,11 +87,11 @@ void lcd_set_right_to_left(void);
 void lcd_enable_autoscroll(void);
 void lcd_disable_autoscroll(void);
 
-void lcd_create_char(uint8_t location, uint8_t *charmap);
+void lcd_create_char(uint8_t location, const uint8_t *charmap);
 
 void lcd_set_cursor(uint8_t col, uint8_t row);
 
 void lcd_puts(char *string);
-void lcd_printf(char *format, ...);
+void lcd_printf(uint8_t row, char *format, ...);
 
 #endif

@@ -1,7 +1,6 @@
 CompileFlags:
-  CompilationDatabase: Ancestors
-  Compiler: avr-gcc
+  CompilationDatabase: '/home/peder/school/embedded/course_assignment/compile_commands.json'
   Add:
-    - -mmcu=atmega328p
     - -DF_CPU=16000000UL
-    - -Iheader
+    - -D__AVR_ATmega328P__
+    - -I/home/peder/school/embedded/course_assignment/header

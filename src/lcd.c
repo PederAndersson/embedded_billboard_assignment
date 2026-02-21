@@ -1,4 +1,5 @@
 #include "lcd.h"
+#include "utils.h"
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -11,6 +12,22 @@ static uint8_t lcd_displayparams;
 static char lcd_buffer[LCD_COL_COUNT + 1];
 static char shift_buffer0[LCD_COL_COUNT + 1];
 static char shift_buffer1[LCD_COL_COUNT + 1];
+
+static const uint8_t glyph_aa_lower[8] = {0x04, 0x0A, 0x04, 0x0E, 0x01, 0x0F, 0x11, 0x0F};
+static const uint8_t glyph_ae_lower[8] = {0x00, 0x0A, 0x00, 0x0E, 0x01, 0x0F, 0x11, 0x0F};
+static const uint8_t glyph_oe_lower[8] = {0x00, 0x0A, 0x00, 0x00, 0x0E, 0x11, 0x11, 0x0E};
+static const uint8_t glyph_aa_upper[8] = {0x04, 0x0A, 0x04, 0x0E, 0x11, 0x11, 0x1F, 0x11};
+static const uint8_t glyph_ae_upper[8] = {0x00, 0x0A, 0x00, 0x0E, 0x11, 0x11, 0x1F, 0x11};
+static const uint8_t glyph_oe_upper[8] = {0x00, 0x0A, 0x00, 0x0E, 0x11, 0x11, 0x11, 0x0E};
+
+static void lcd_load_swedish_glyphs(void) {
+    lcd_create_char(1, glyph_aa_lower);
+    lcd_create_char(2, glyph_ae_lower);
+    lcd_create_char(3, glyph_oe_lower);
+    lcd_create_char(4, glyph_aa_upper);
+    lcd_create_char(5, glyph_ae_upper);
+    lcd_create_char(6, glyph_oe_upper);
+}
 
 void lcd_command(uint8_t command) { lcd_send(command, 0); }
 
@@ -70,6 +87,7 @@ void lcd_init(void) {
 
     lcd_displayparams = LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF;
     lcd_command(LCD_DISPLAYCONTROL | lcd_displayparams);
+    lcd_load_swedish_glyphs();
 }
 
 void lcd_on(void) {
@@ -120,8 +138,9 @@ void lcd_scroll_right(void) {
     lcd_command(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVERIGHT);
 }
 
-void stringCopy(uint8_t buffer, char* string){
+void lcd_stringCopy(uint8_t buffer, char* string){
     uint8_t i = 0;
+    swedish_parser(string);
     if (buffer == 1){
 
         while (string[i] != '\0' && i < LCD_COL_COUNT) {
@@ -189,7 +208,7 @@ void lcd_blink_row(uint8_t row) {
         blink = 0;
     }else {
         for (uint8_t i = 0; i < LCD_COL_COUNT; i++){
-            lcd_write(shift_buffer1[i]);
+            lcd_write(shift_buffer0[i]);
         }
         blink = 0;
     }
@@ -216,7 +235,7 @@ void lcd_disable_autoscroll(void) {
     lcd_command(LCD_ENTRYMODESET | lcd_displayparams);
 }
 
-void lcd_create_char(uint8_t location, uint8_t *charmap) {
+void lcd_create_char(uint8_t location, const uint8_t *charmap) {
     lcd_command(LCD_SETCGRAMADDR | ((location & 0x7) << 3));
     for (int i = 0; i < 8; i++) {
         lcd_write(charmap[i]);
@@ -231,12 +250,15 @@ void lcd_set_cursor(uint8_t col, uint8_t row) {
 }
 
 void lcd_puts(char *string) {
+    swedish_parser(string);
     for (char *it = string; *it; it++) {
         lcd_write(*it);
     }
 }
 
-void lcd_printf(char *format, ...) {
+void lcd_printf(uint8_t row, char *format, ...) {
+    lcd_set_cursor(0, row);
+    swedish_parser(format);
     va_list args;
 
     va_start(args, format);

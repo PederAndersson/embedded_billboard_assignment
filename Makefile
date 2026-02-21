@@ -3,8 +3,9 @@
 # Compiler and tools
 CC = avr-gcc
 OBJCOPY = avr-objcopy
+MCU := atmega328p
 AVRDUDE = avrdude
-CFLAGS = -mmcu=atmega328p -Os -Wall -Wextra -Iheader/ -DF_CPU=16000000UL
+CFLAGS = -mmcu=atmega328p -Os -Wall -Wextra -Iheader/ -DF_CPU=16000000UL -mmcu=${MCU}
 LDFLAGS = -mmcu=atmega328p
 
 # Target settings
@@ -15,7 +16,7 @@ PORT = /dev/ttyUSB0
 BAUD = 115200
 
 # Source files
-SRCS = src/main.c src/systemTick.c src/lcd.c
+SRCS = src/main.c src/systemTick.c src/lcd.c src/clientManager.c src/utils.c
 OBJS = $(SRCS:.c=.o)
 
 # Targets
