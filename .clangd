@@ -4,3 +4,20 @@ CompileFlags:
     - -DF_CPU=16000000UL
     - -D__AVR_ATmega328P__
     - -I/home/peder/school/embedded/course_assignment/header
+    - -Wno-int-to-pointer-cast
+    - -Wno-pointer-to-int-cast
+    - -Wno-invalid-constexpr
+
+Diagnostics:
+  Suppress:
+    - "invalid-asm-cast"
+    - "asm_invalid_output_constraint"
+    - "unknown-attributes"
+    - "-Wcast-qual"
+    - "int-to-pointer-cast"
+    - "pointer-to-int-cast"
+  ClangTidy:
+    Remove:
+      - "readability-*"
+      - "modernize-*"
+  UnusedIncludes: None

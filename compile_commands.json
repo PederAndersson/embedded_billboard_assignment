@@ -2,7 +2,6 @@
   {
     "arguments": [
       "/usr/lib64/ccache/avr-gcc",
-      "-mmcu=atmega328p",
       "-Os",
       "-Wall",
       "-Wextra",
@@ -11,11 +10,11 @@
       "-mmcu=atmega328p",
       "-c",
       "-o",
-      "src/main.o",
+      "build/main.o",
       "src/main.c"
     ],
     "directory": "/home/peder/school/embedded/course_assignment",
     "file": "/home/peder/school/embedded/course_assignment/src/main.c",
-    "output": "/home/peder/school/embedded/course_assignment/src/main.o"
+    "output": "/home/peder/school/embedded/course_assignment/build/main.o"
   }
 ]
