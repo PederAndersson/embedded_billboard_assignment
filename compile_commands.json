@@ -1,7 +1,7 @@
 [
   {
     "arguments": [
-      "/usr/lib64/ccache/avr-gcc",
+      "/opt/avr-toolchain/bin/avr-gcc",
       "-Os",
       "-Wall",
       "-Wextra",

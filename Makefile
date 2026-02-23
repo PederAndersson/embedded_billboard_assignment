@@ -5,8 +5,16 @@ CC = avr-gcc
 OBJCOPY = avr-objcopy
 MCU := atmega328p
 AVRDUDE = avrdude
-CFLAGS = -Os -Wall -Wextra -Iheader/ -DF_CPU=16000000UL -mmcu=${MCU} -MMD -MP
+
+CFLAGS_COMMON = -Wall -Wextra -Iheader/ -DF_CPU=16000000UL -mmcu=${MCU} -MMD -MP
+CFLAGS_RELEASE = -Os
+CFLAGS_DEBUG = -Og -g3 -fno-inline
+CFLAGS = $(CFLAGS_RELEASE) $(CFLAGS_COMMON)
 LDFLAGS = -mmcu=${MCU}
+
+ifeq ($(DEBUG),1)
+	CFLAGS = $(CFLAGS_DEBUG) $(CFLAGS_COMMON)
+endif
 
 # Target settings
 TARGET = main
@@ -22,6 +30,9 @@ OBJS = $(addprefix $(BUILD_DIR)/,$(notdir $(SRCS:.c=.o)))
 
 # Targets
 all: $(BUILD_DIR)/$(TARGET).hex
+
+debug: DEBUG=1
+debug: $(BUILD_DIR)/$(TARGET).elf
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 

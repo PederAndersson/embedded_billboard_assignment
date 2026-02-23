@@ -15,15 +15,6 @@ static uint32_t total_price(client *c, client_manager * mgr){
         return mgr->total_income += c->price;
 }
 
-void manager_config(client *c, client_manager* mgr){
-    
-    mgr->client_list[size] = c;
-    mgr->previous_client = *c;
-    mgr->total_income = total_price(c, mgr);
-    if (size < CLIENTS){ size++;}
-
-}
-
 void next_mode(enum Mode *m){
     if (*m == TEXT){
         *m = ODD_EVEN;
@@ -35,11 +26,11 @@ void next_mode(enum Mode *m){
 void next_effect(enum Effect *e, client_manager* mgr){
     switch (*e){
         case PLAIN_TEXT: {
-            lcd_stringCopy(1, mgr->client_list[0]->billboards[1]);
+            lcd_stringCopy(1, mgr->client_list[0].billboards[1]);
             *e = SCROLL;
             break;}
         case SCROLL: {
-            lcd_stringCopy(0, mgr->client_list[0]->billboards[2]);
+            lcd_stringCopy(0, mgr->client_list[0].billboards[2]);
             *e = BLINK;
             break;}
         case BLINK: {*e = PLAIN_TEXT; break;}
@@ -50,19 +41,19 @@ void effect_output(enum Effect e, client_manager *mgr, uint32_t *out){
 
     switch(e){
         case PLAIN_TEXT:{
-            lcd_printf(0, mgr->client_list[0]->client_name);
-            lcd_printf(1, mgr->client_list[0]->billboards[0]);
+            lcd_printf(0, mgr->client_list[0].client_name);
+            lcd_printf(1, mgr->client_list[0].billboards[0]);
             *out = 0;  
             break;
         }
         case SCROLL: {
-            lcd_printf(0,mgr->client_list[0]->client_name);
+            lcd_printf(0,mgr->client_list[0].client_name);
             lcd_scroll_left_row(1);
             *out = scroll_ms;
             break;
         }
         case BLINK: {
-            lcd_printf(0,mgr->client_list[0]->client_name);
+            lcd_printf(0,mgr->client_list[0].client_name);
             lcd_blink_row(1);
             *out = blink_ms;
             break;
@@ -87,7 +78,7 @@ client parse_client_info(uint8_t row){
         i++;
     }
     parse_buffer[i] = '\0';
-    swedish_parser(parse_buffer);
+
     parse_state st = S_CLIENT;
 
     uint8_t ad_idx = 0;
@@ -111,7 +102,7 @@ client parse_client_info(uint8_t row){
                 dest = temp.billboards[0];
                 dest_max = sizeof(temp.billboards[0]);
             }else if (st == S_BILLBOARD){
-                if(ad_idx < NUMBER_ADS){
+                if(ad_idx < NUMBER_ADS - 1){
                     ad_idx++;
                     dest = temp.billboards[ad_idx];
                     dest_max = sizeof(temp.billboards[ad_idx]);
@@ -149,12 +140,11 @@ client parse_client_info(uint8_t row){
 
 }
 
-client_manager add_clients(){
+void add_clients(client_manager *mgr){
 
-    client temp_client;
-    client_manager temp_mgr;
-
-
-
-    return temp_mgr;
+    mgr->total_income = 0;
+    for (uint8_t i = 0; i < rows_count; i++){
+        mgr->client_list[i] = parse_client_info(i);
+        total_price(&mgr->client_list[i], mgr);
+    }
 }
