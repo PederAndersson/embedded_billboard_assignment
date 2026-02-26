@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <stdlib.h>
 #include "systemTick.h"
 #include "lcd.h"
 #include "clientManager.h"
@@ -7,9 +8,8 @@
 #include "utils.h"
 #include "clients.h"
 #include <stdint.h>
-#include <avr/delay.h>
 
-#define second_ms 1000
+#define second_ms 250
 #define switch_mode 12000
 #define switch_effect 4000
 
@@ -53,16 +53,34 @@ static inline void serial_write_u32(uint32_t v) {
     }
 }
 
+static inline void serial_write_u8(uint8_t v) {
+    char buf[11]; // max 10 digits + NUL for uint32_t
+    uint8_t i = 0;
+    if (v == 0) {
+        serial_write_byte('0');
+        return;
+    }
+    while (v > 0 && i < sizeof(buf) - 1) {
+        buf[i++] = (char)('0' + (v % 10));
+        v /= 10;
+    }
+    while (i > 0) {
+        serial_write_byte((uint8_t)buf[--i]);
+    }
+}
+
+
 
 client_manager mgr;
 enum Mode mode;
 enum Effect effect;
 
 int main(void) {
-
     Timer0_init(); 
     lcd_init();
-    serial_init();
+    srand_init();
+    
+    uint32_t seed = 0;
 
     uint32_t previous_seconds = 0;
     uint32_t seconds = 0;
@@ -75,29 +93,15 @@ int main(void) {
     
     mode = TEXT;
     effect = PLAIN_TEXT;
-
+  
     sei();
 
     while(1) {
     uint32_t current_time = millis(); 
-    if(current_time - previous_seconds >= switch_effect){
-        serial_write_u32(mgr.total_income);
-        serial_write_str(mgr.client_list[seconds].client_name);
-        serial_write_str("\n");
-        serial_write_str(mgr.client_list[seconds].billboards[0]);
-        serial_write_str("\n");
-        serial_write_str(mgr.client_list[seconds].billboards[1]);
-        serial_write_str("\n");
-        serial_write_str(mgr.client_list[seconds].billboards[2]);
-        serial_write_str("\n");
-        serial_write_u32(mgr.client_list[seconds].price);
-        serial_write_str("\n");
-        seconds = (seconds + 1) % rows_count;
-
-        previous_seconds = current_time;
-    }
-
-        
+        if (current_time - seconds >= 2500){
+            lcd_print_text(1, mgr.client_list[0].billboards[1]);
+            seconds = current_time;
+        }
     }
     
     return 0;
