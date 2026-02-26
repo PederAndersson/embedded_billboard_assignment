@@ -16,5 +16,95 @@
     "directory": "/home/peder/school/embedded/course_assignment",
     "file": "/home/peder/school/embedded/course_assignment/src/main.c",
     "output": "/home/peder/school/embedded/course_assignment/build/main.o"
+  },
+  {
+    "arguments": [
+      "/opt/avr-toolchain/bin/avr-gcc",
+      "-Os",
+      "-Wall",
+      "-Wextra",
+      "-Iheader/",
+      "-DF_CPU=16000000UL",
+      "-mmcu=atmega328p",
+      "-c",
+      "-o",
+      "build/systemTick.o",
+      "src/systemTick.c"
+    ],
+    "directory": "/home/peder/school/embedded/course_assignment",
+    "file": "/home/peder/school/embedded/course_assignment/src/systemTick.c",
+    "output": "/home/peder/school/embedded/course_assignment/build/systemTick.o"
+  },
+  {
+    "arguments": [
+      "/opt/avr-toolchain/bin/avr-gcc",
+      "-Os",
+      "-Wall",
+      "-Wextra",
+      "-Iheader/",
+      "-DF_CPU=16000000UL",
+      "-mmcu=atmega328p",
+      "-c",
+      "-o",
+      "build/lcd.o",
+      "src/lcd.c"
+    ],
+    "directory": "/home/peder/school/embedded/course_assignment",
+    "file": "/home/peder/school/embedded/course_assignment/src/lcd.c",
+    "output": "/home/peder/school/embedded/course_assignment/build/lcd.o"
+  },
+  {
+    "arguments": [
+      "/opt/avr-toolchain/bin/avr-gcc",
+      "-Os",
+      "-Wall",
+      "-Wextra",
+      "-Iheader/",
+      "-DF_CPU=16000000UL",
+      "-mmcu=atmega328p",
+      "-c",
+      "-o",
+      "build/clientManager.o",
+      "src/clientManager.c"
+    ],
+    "directory": "/home/peder/school/embedded/course_assignment",
+    "file": "/home/peder/school/embedded/course_assignment/src/clientManager.c",
+    "output": "/home/peder/school/embedded/course_assignment/build/clientManager.o"
+  },
+  {
+    "arguments": [
+      "/opt/avr-toolchain/bin/avr-gcc",
+      "-Os",
+      "-Wall",
+      "-Wextra",
+      "-Iheader/",
+      "-DF_CPU=16000000UL",
+      "-mmcu=atmega328p",
+      "-c",
+      "-o",
+      "build/utils.o",
+      "src/utils.c"
+    ],
+    "directory": "/home/peder/school/embedded/course_assignment",
+    "file": "/home/peder/school/embedded/course_assignment/src/utils.c",
+    "output": "/home/peder/school/embedded/course_assignment/build/utils.o"
+  },
+  {
+    "arguments": [
+      "/opt/avr-toolchain/bin/avr-gcc",
+      "-Os",
+      "-Wall",
+      "-Wextra",
+      "-Iheader/",
+      "-DF_CPU=16000000UL",
+      "-mmcu=atmega328p",
+      "-c",
+      "-o",
+      "build/clients.o",
+      "src/clients.c"
+    ],
+    "directory": "/home/peder/school/embedded/course_assignment",
+    "file": "/home/peder/school/embedded/course_assignment/src/clients.c",
+    "output": "/home/peder/school/embedded/course_assignment/build/clients.o"
   }
 ]

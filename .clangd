@@ -4,6 +4,8 @@ CompileFlags:
     - -DF_CPU=16000000UL
     - -D__AVR_ATmega328P__
     - -I/home/peder/school/embedded/course_assignment/header
+    - -isystem/opt/avr-toolchain/avr/include
+    - -isystem/opt/avr-toolchain/lib/gcc/avr/15.1.0/include
     - -Wno-int-to-pointer-cast
     - -Wno-pointer-to-int-cast
     - -Wno-invalid-constexpr
