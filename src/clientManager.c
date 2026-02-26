@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "clientManager.h"
 #include "avr/pgmspace.h"
 #include "lcd.h"
@@ -62,7 +63,7 @@ void effect_output(enum Effect e, client_manager *mgr, uint32_t *out){
 
 }
 
-client parse_client_info(uint8_t row){
+static client parse_client_info(uint8_t row){
     client temp;
     uint8_t i = 0;
 
@@ -84,6 +85,7 @@ client parse_client_info(uint8_t row){
     uint8_t ad_idx = 0;
     uint8_t cpy_idx = 0;
     uint32_t price = 0;
+    uint8_t ads = 0;
 
     char *dest = temp.client_name;
     uint16_t dest_max = sizeof(temp.client_name);
@@ -92,7 +94,7 @@ client parse_client_info(uint8_t row){
         char c = parse_buffer[k];
 
         if (c == ',' || c == '\0'){
-            if (st != S_PRICE){
+            if (st != S_ADS){
                 if (dest_max > 0){dest[cpy_idx] = '\0';}
             }
 
@@ -102,7 +104,7 @@ client parse_client_info(uint8_t row){
                 dest = temp.billboards[0];
                 dest_max = sizeof(temp.billboards[0]);
             }else if (st == S_BILLBOARD){
-                if(ad_idx < NUMBER_ADS - 1){
+                if(ad_idx < NUMBER_ADS){
                     ad_idx++;
                     dest = temp.billboards[ad_idx];
                     dest_max = sizeof(temp.billboards[ad_idx]);
@@ -110,6 +112,8 @@ client parse_client_info(uint8_t row){
                     st = S_PRICE;
                 }
             }else if (st == S_PRICE){
+                st = S_ADS;
+            }else if(st == S_ADS){
                 st = S_DONE;
             }
             cpy_idx = 0;
@@ -124,7 +128,13 @@ client parse_client_info(uint8_t row){
             } else{
 
             }
-        }else {
+
+        }else if(st == S_ADS){
+            if (c >= '0' && c <= '9'){
+                ads = ads * 10u + (uint8_t)(c - '0');
+            }
+        }
+        else {
             if (cpy_idx == 0 && (c == ' ' || c == '\t')){
                 continue;
             }
@@ -134,7 +144,7 @@ client parse_client_info(uint8_t row){
             }
         }
     }
-
+    temp.number_ads = ads;
     temp.price = price;
     return temp;
 
@@ -147,4 +157,31 @@ void add_clients(client_manager *mgr){
         mgr->client_list[i] = parse_client_info(i);
         total_price(&mgr->client_list[i], mgr);
     }
+    mgr->previous_client = &mgr->client_list[rows_count - 1];
+}
+
+
+client* next_client(client_manager *mgr){
+
+    uint32_t client_slot_number = rand() % (mgr->total_income - (mgr->previous_client->price+1));
+    uint32_t client_values = 0;
+    client* next_client = NULL;
+
+    for (uint8_t i = 0; i < rows_count; i++){
+        if (&mgr->client_list[i] != mgr->previous_client){
+            client_values += mgr->client_list[i].price;
+            if (client_values > client_slot_number){
+                next_client = &mgr->client_list[i];
+                break;
+            }
+        }
+    }
+    mgr->previous_client = next_client;
+    return next_client;
+}
+
+void next_billboard(client_manager *mgr){
+    client* client = next_client(mgr);
+    lcd_print(0, client->client_name);
+    lcd_print(1, client->billboards[rand() % client->number_ads]);
 }

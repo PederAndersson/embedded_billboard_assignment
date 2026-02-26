@@ -7,7 +7,7 @@
 
 #define CLIENTNAME 50
 #define ADD_SIZE 40
-#define NUMBER_ADS 3
+#define NUMBER_ADS 2
 #define PARSE_BUFFER 254
 
 #define CLIENTS 5
@@ -32,29 +32,30 @@ typedef enum {
     S_CLIENT,
     S_BILLBOARD,
     S_PRICE,
+    S_ADS,
     S_DONE
 }parse_state;
 
 typedef struct Client {
     char client_name[CLIENTNAME+1];
-    char billboards[NUMBER_ADS][ADD_SIZE+1];
+    char billboards[NUMBER_ADS+1][ADD_SIZE+1];
+    uint8_t number_ads;
     uint32_t price;
 } client;
 
 typedef struct Client_manager {
     client client_list[CLIENTS+1];
-    client previous_client;
+    client* previous_client;
     uint32_t total_income;
 
 } client_manager;
 
 
-void next_client();
 void next_mode(enum Mode *m);
 void next_effect(enum Effect *e, client_manager* mgr);
 void effect_output(enum Effect e, client_manager* mgr, uint32_t *out);
-client parse_client_info(uint8_t row);
 void add_clients(client_manager *mgr);
-
+client* next_client(client_manager *mgr);
+void next_billboard(client_manager *mgr);
 
 #endif
