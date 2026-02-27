@@ -17,16 +17,16 @@
 
 
 
-enum Mode {
+typedef enum  {
     TEXT,
     ODD_EVEN
-};
+} mode;
 
-enum Effect {
+typedef enum {
     PLAIN_TEXT,
     SCROLL,
     BLINK
-};
+}effect;
 
 typedef enum {
     S_CLIENT,
@@ -36,14 +36,14 @@ typedef enum {
     S_DONE
 }parse_state;
 
-typedef struct Client {
+typedef struct {
     char client_name[CLIENTNAME+1];
     char billboards[NUMBER_ADS+1][ADD_SIZE+1];
     uint8_t number_ads;
     uint32_t price;
 } client;
 
-typedef struct Client_manager {
+typedef struct {
     client client_list[CLIENTS+1];
     client* previous_client;
     uint32_t total_income;
@@ -51,9 +51,9 @@ typedef struct Client_manager {
 } client_manager;
 
 
-void next_mode(enum Mode *m);
-void next_effect(enum Effect *e, client_manager* mgr);
-void effect_output(enum Effect e, client_manager* mgr, uint32_t *out);
+void next_mode(mode *m);
+void next_effect(effect *e, client_manager* mgr);
+void effect_output(effect e, client_manager* mgr, uint32_t *out);
 void add_clients(client_manager *mgr);
 client* next_client(client_manager *mgr);
 void next_billboard(client_manager *mgr);
