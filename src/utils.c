@@ -196,6 +196,67 @@ void lcd_print_text(uint8_t row, char *str){
     
 }
 
+void lcd_print_blink(uint8_t row, char *str){
+    static uint8_t offset = 0;
+    static uint8_t blink = 0;
+    uint8_t str_len = 0;
+    uint8_t i = 0;
+
+    while (str[str_len] != '\0'){
+        str_len++;
+    }
+    char line[str_len + 1];
+    while (i < str_len){
+        line[i] = str[i];
+        i++;
+    }
+    line[i] = '\0';
+    swedish_parser(line);
+    lcd_set_cursor(0, row);
+
+    if (blink == 1){
+        for (uint8_t i = 0; i < LCD_COL_COUNT; i++){
+            lcd_write(' ');
+        }
+        blink = 0;
+        return;
+    }
+    
+    if (str_len <= LCD_COL_COUNT && blink == 0){
+        
+        for (uint8_t i = 0; i < str_len; i++){
+            lcd_write(line[i]);
+        }
+        blink = 1; 
+        offset = 0;  
+        return;
+    }
+    static uint8_t second_half_idx = 0;
+    if (offset > 0 && blink == 0){
+        uint8_t idx = 0;
+        for (uint8_t i = second_half_idx; line[i] != '\0'; i++){
+            lcd_write(line[i]);
+            idx++;
+        }
+        if (idx < LCD_COL_COUNT){
+            for (uint8_t i = idx; i < LCD_COL_COUNT; i++){
+                lcd_write( ' ');
+            }
+        }
+        blink = 1;
+        offset = 0;
+        second_half_idx = 0;
+    }
+    else if (offset == 0 && blink == 0){
+        for (uint8_t i = 0; i < LCD_COL_COUNT; i++){
+            lcd_write(line[i]);
+            second_half_idx++;
+        }
+        offset = 1;
+        blink = 1;
+    }
+}
+
 
 static uint8_t read_adc(){
 

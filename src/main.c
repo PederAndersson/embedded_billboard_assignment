@@ -99,7 +99,7 @@ int main(void) {
     while(1) {
     uint32_t current_time = millis(); 
         if (current_time - seconds >= 2500){
-            lcd_print_text(1, mgr.client_list[0].billboards[1]);
+            lcd_print_blink(1, mgr.client_list[0].billboards[1]);
             seconds = current_time;
         }
     }

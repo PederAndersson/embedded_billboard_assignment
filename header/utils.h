@@ -11,6 +11,7 @@ void swedish_parser(char *text);
 void lcd_print(uint8_t row, char *str);
 void lcd_print_scroll(uint8_t row, char*str);
 void lcd_print_text(uint8_t row, char *str);
+void lcd_print_blink(uint8_t row, char *str);
 void srand_init();
 
 #endif
