@@ -12,10 +12,6 @@ CFLAGS_DEBUG = -Og -g3 -fno-inline
 CFLAGS = $(CFLAGS_RELEASE) $(CFLAGS_COMMON)
 LDFLAGS = -mmcu=${MCU}
 
-ifeq ($(DEBUG),1)
-	CFLAGS = $(CFLAGS_DEBUG) $(CFLAGS_COMMON)
-endif
-
 # Target settings
 TARGET = main
 BUILD_DIR = build
@@ -25,13 +21,14 @@ BAUD = 115200
 
 
 # Source files
-SRCS = src/main.c src/systemTick.c src/lcd.c src/clientManager.c src/utils.c src/clients.c
+SRCS = src/main.c src/systemTick.c src/lcd.c src/clientManager.c src/utils.c src/clients.c src/billboardManager.c
 OBJS = $(addprefix $(BUILD_DIR)/,$(notdir $(SRCS:.c=.o)))
 
 # Targets
 all: $(BUILD_DIR)/$(TARGET).hex
 
 debug: DEBUG=1
+debug: CFLAGS = $(CFLAGS_DEBUG) $(CFLAGS_COMMON)
 debug: $(BUILD_DIR)/$(TARGET).elf
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
@@ -51,5 +48,5 @@ upload: $(BUILD_DIR)/$(TARGET).hex
 clean:
 	rm -rf $(BUILD_DIR)
 
-.PHONY: all upload clean
+.PHONY: all debug upload clean
 -include $(OBJS:.o=.d)

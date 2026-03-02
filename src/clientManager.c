@@ -5,71 +5,21 @@
 #include "clients.h"
 #include "utils.h"
 
-static uint8_t size = 0;
-static uint32_t scroll_ms = SCROLL_MS;
-static uint32_t blink_ms = BLINK_MS;
 static char parse_buffer[PARSE_BUFFER+1];
-static const uint8_t number_ads = 2;
-
 
 static uint32_t total_price(client *c, client_manager * mgr){
         return mgr->total_income += c->price;
 }
 
-void next_mode(enum Mode *m){
-    if (*m == TEXT){
-        *m = ODD_EVEN;
-    }else if (*m == ODD_EVEN){
-        *m = TEXT;
-    }
-}
-
-void next_effect(enum Effect *e, client_manager* mgr){
-    switch (*e){
-        case PLAIN_TEXT: {
-            lcd_stringCopy(1, mgr->client_list[0].billboards[1]);
-            *e = SCROLL;
-            break;}
-        case SCROLL: {
-            lcd_stringCopy(0, mgr->client_list[0].billboards[2]);
-            *e = BLINK;
-            break;}
-        case BLINK: {*e = PLAIN_TEXT; break;}
-    }
-}
-
-void effect_output(enum Effect e, client_manager *mgr, uint32_t *out){
-
-    switch(e){
-        case PLAIN_TEXT:{
-            lcd_printf(0, mgr->client_list[0].client_name);
-            lcd_printf(1, mgr->client_list[0].billboards[0]);
-            *out = 0;  
-            break;
-        }
-        case SCROLL: {
-            lcd_printf(0,mgr->client_list[0].client_name);
-            lcd_scroll_left_row(1);
-            *out = scroll_ms;
-            break;
-        }
-        case BLINK: {
-            lcd_printf(0,mgr->client_list[0].client_name);
-            lcd_blink_row(1);
-            *out = blink_ms;
-            break;
-        }
-    }
-
-}
-
 static client parse_client_info(uint8_t row){
-    client temp;
+    client client;
     uint8_t i = 0;
 
-    temp.client_name[0] = '\0';
-    for (uint8_t i = 0; i < NUMBER_ADS; i++){temp.billboards[i][0] = '\0';}
-    temp.price = 0;
+    client.client_name[0] = '\0';
+    for (uint8_t i = 0; i <= NUMBER_ADS; i++){client.billboards[i].billboard[0] = '\0';}
+    client.price = 0;
+    client.client_id = 0;
+    client.number_ads = 0;
 
     const char* row_ptr = (const char*)pgm_read_ptr(&list[row]);
     while (i < PARSE_BUFFER){
@@ -83,37 +33,52 @@ static client parse_client_info(uint8_t row){
     parse_state st = S_CLIENT;
 
     uint8_t ad_idx = 0;
+    uint8_t effect_idx = 0;
     uint8_t cpy_idx = 0;
     uint32_t price = 0;
     uint8_t ads = 0;
+    uint8_t id = 0;
+    uint8_t selection_option = 0;
+    uint8_t effect = 0;
 
-    char *dest = temp.client_name;
-    uint16_t dest_max = sizeof(temp.client_name);
+    char *dest = client.client_name;
+    uint16_t dest_max = sizeof(client.client_name);
 
     for (uint16_t k = 0; ; k++){
         char c = parse_buffer[k];
 
         if (c == ',' || c == '\0'){
-            if (st != S_ADS){
+            if (st == S_CLIENT || st == S_BILLBOARD){
                 if (dest_max > 0){dest[cpy_idx] = '\0';}
             }
 
             if (st == S_CLIENT){
                 st = S_BILLBOARD;
-                ad_idx = 0;
-                dest = temp.billboards[0];
-                dest_max = sizeof(temp.billboards[0]);
+                dest = client.billboards[ad_idx].billboard;
+                dest_max = sizeof(client.billboards[ad_idx].billboard);
             }else if (st == S_BILLBOARD){
                 if(ad_idx < NUMBER_ADS){
                     ad_idx++;
-                    dest = temp.billboards[ad_idx];
-                    dest_max = sizeof(temp.billboards[ad_idx]);
+                    dest = client.billboards[ad_idx].billboard;
+                    dest_max = sizeof(client.billboards[ad_idx].billboard);
                 } else {
                     st = S_PRICE;
                 }
             }else if (st == S_PRICE){
                 st = S_ADS;
             }else if(st == S_ADS){
+                st = S_ID;
+            }else if (st == S_ID){
+                st = S_EFFECT;
+            }else if (st == S_EFFECT){
+                client.billboards[effect_idx].effect = effect;
+                if (effect_idx < ads - 1){
+                    effect_idx++;                
+                }
+                else {
+                    st = S_SELECTION;
+                }
+            }else if (st == S_SELECTION){
                 st = S_DONE;
             }
             cpy_idx = 0;
@@ -125,13 +90,22 @@ static client parse_client_info(uint8_t row){
         if (st == S_PRICE){
             if (c >= '0' && c <= '9'){
                 price = price * 10u + (uint32_t)(c - '0');
-            } else{
-
-            }
-
+            } 
         }else if(st == S_ADS){
             if (c >= '0' && c <= '9'){
-                ads = ads * 10u + (uint8_t)(c - '0');
+                ads = (uint8_t)(c - '0');
+            }
+        }else if (st == S_ID){
+            if (c >= '0' && c <= '9'){
+                id = (uint8_t)(c - '0');
+            }
+        }else if (st == S_EFFECT){
+            if (c >= '0' && c <= '9'){
+                effect = (uint8_t)(c - '0');
+            }
+        }else if (st == S_SELECTION){
+             if (c >= '0' && c <= '9'){
+                selection_option = (uint8_t)(c - '0');
             }
         }
         else {
@@ -144,10 +118,39 @@ static client parse_client_info(uint8_t row){
             }
         }
     }
-    temp.number_ads = ads;
-    temp.price = price;
-    return temp;
+    client.client_id = id;
+    client.number_ads = ads;
+    client.price = price;
+    client.display_option = selection_option;
+    return client;
+}
 
+static void manager_init(client_manager *mgr){
+    mgr->intervals.billboard_duration = BILLBOARDS_MS;
+    mgr->intervals.blink_off = BLINK_OFF;
+    mgr->intervals.blink_on = BLINK_ON;
+    mgr->intervals.scroll_tick = SCROLL_MS;
+    mgr->intervals.text_switch = TEXT_SWITCH;
+    mgr->intervals.minutes_tick = MINUTE_MS;
+    mgr->intervals.switch_duration = SWITCH_MS;
+
+/*     for (uint8_t i = 0; i < rows_count; i++){
+        if (mgr->client_list[i].display_option == 0){
+            mgr->client_list[i].display_option = RANDOM;
+        }
+        else {
+            mgr->client_list[i].display_option = ODD_EVEN;
+        }
+        for (uint8_t j = 0; j < mgr->client_list[i].number_ads; j++){
+            if (mgr->client_list[i].billboards[j].effect == 0){
+                mgr->client_list[i].billboards[j].effect = TEXT;
+            }else if (mgr->client_list[i].billboards[j].effect == 1){
+                mgr->client_list[i].billboards[j].effect = SCROLL;
+            }else {
+                mgr->client_list[i].billboards[j].effect = BLINK;
+            }
+        }
+    } */
 }
 
 void add_clients(client_manager *mgr){
@@ -157,31 +160,29 @@ void add_clients(client_manager *mgr){
         mgr->client_list[i] = parse_client_info(i);
         total_price(&mgr->client_list[i], mgr);
     }
-    mgr->previous_client = &mgr->client_list[rows_count - 1];
+    mgr->current_client = &mgr->client_list[rows_count - 1];
+    manager_init(mgr);
 }
 
 
-client* next_client(client_manager *mgr){
+void next_client(client_manager *mgr){
 
-    uint32_t client_slot_number = rand() % (mgr->total_income - (mgr->previous_client->price+1));
-    uint32_t client_values = 0;
+    mgr->previous_client = mgr->current_client;
+    uint32_t adjusted_total = mgr->total_income - mgr->previous_client->price;
+    uint32_t client_slot_number = rand() % adjusted_total;
+    uint32_t client_prices = 0;
     client* next_client = NULL;
 
     for (uint8_t i = 0; i < rows_count; i++){
         if (&mgr->client_list[i] != mgr->previous_client){
-            client_values += mgr->client_list[i].price;
-            if (client_values > client_slot_number){
+            client_prices += mgr->client_list[i].price;
+            if (client_prices > client_slot_number){
                 next_client = &mgr->client_list[i];
                 break;
             }
         }
     }
-    mgr->previous_client = next_client;
-    return next_client;
+    mgr->current_client = next_client;
 }
 
-void next_billboard(client_manager *mgr){
-    client* client = next_client(mgr);
-    lcd_print(0, client->client_name);
-    lcd_print(1, client->billboards[rand() % client->number_ads]);
-}
+
