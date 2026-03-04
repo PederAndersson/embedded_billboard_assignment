@@ -191,7 +191,7 @@ void lcd_print_text(uint8_t row, char *str){
     
 }
 
-void lcd_print_blink(uint8_t row, char *str){
+void lcd_print_blink(uint8_t row, char *str, player *play, uint32_t now){
     uint8_t str_len = 0;
     uint8_t i = 0;
 
@@ -205,47 +205,53 @@ void lcd_print_blink(uint8_t row, char *str){
     }
     line[i] = '\0';
     swedish_parser(line);
+    uint8_t line_len = 0;
+    while (line[line_len] != '\0'){
+        line_len++;
+    }
     lcd_set_cursor(0, row);
 
-    if (v.blink == 1){
+    if (v.blink == 1 && now - play->t.blink_off_ms >= BLINK_OFF){
         for (uint8_t i = 0; i < LCD_COL_COUNT; i++){
             lcd_write(' ');
         }
         v.blink = 0;
+        play->t.blink_on_ms = now;
         return;
     }
-    
-    if (str_len <= LCD_COL_COUNT && v.blink == 0){
-        
-        for (uint8_t i = 0; i < str_len; i++){
-            lcd_write(line[i]);
-        }
-        v.blink = 1; 
-        v.offset = 0;  
-        return;
-    }
-    if (v.offset > 0 && v.blink == 0){
-        uint8_t idx = 0;
-        for (uint8_t i = v.second_half_idx; line[i] != '\0'; i++){
-            lcd_write(line[i]);
-            idx++;
-        }
-        if (idx < LCD_COL_COUNT){
-            for (uint8_t i = idx; i < LCD_COL_COUNT; i++){
-                lcd_write( ' ');
+
+    if (v.blink == 0 && now - play->t.blink_on_ms >= BLINK_ON){
+        if (line_len <= LCD_COL_COUNT){
+            for (uint8_t i = 0; i < line_len; i++){
+                lcd_write(line[i]);
             }
+            for (uint8_t i = line_len; i < LCD_COL_COUNT; i++){
+                lcd_write(' ');
+            }
+            v.offset = 0;
+            v.second_half_idx = 0;
+        } else if (v.offset == 0) {
+            for (uint8_t i = 0; i < LCD_COL_COUNT; i++){
+                lcd_write(line[i]);
+            }
+            v.second_half_idx = LCD_COL_COUNT;
+            v.offset = 1;
+        } else {
+            uint8_t idx = 0;
+            for (uint8_t i = v.second_half_idx; line[i] != '\0'; i++){
+                lcd_write(line[i]);
+                idx++;
+            }
+            for (uint8_t i = idx; i < LCD_COL_COUNT; i++){
+                lcd_write(' ');
+            }
+            v.offset = 0;
+            v.second_half_idx = 0;
         }
+
         v.blink = 1;
-        v.offset = 0;
-        v.second_half_idx = 0;
-    }
-    else if (v.offset == 0 && v.blink == 0){
-        for (uint8_t i = 0; i < LCD_COL_COUNT; i++){
-            lcd_write(line[i]);
-            v.second_half_idx++;
-        }
-        v.offset = 1;
-        v.blink = 1;
+        play->t.blink_off_ms = now;
+        return;
     }
 }
  

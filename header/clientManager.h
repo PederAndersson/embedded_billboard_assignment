@@ -16,7 +16,7 @@
 #define BILLBOARDS_MS 20000
 #define SCROLL_MS 300
 #define BLINK_ON 1500
-#define BLINK_OFF 500
+#define BLINK_OFF 1000
 #define TEXT_SWITCH 2000
 #define SWITCH_MS 2500
 

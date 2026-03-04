@@ -134,23 +134,6 @@ static void manager_init(client_manager *mgr){
     mgr->intervals.minutes_tick = MINUTE_MS;
     mgr->intervals.switch_duration = SWITCH_MS;
 
-/*     for (uint8_t i = 0; i < rows_count; i++){
-        if (mgr->client_list[i].display_option == 0){
-            mgr->client_list[i].display_option = RANDOM;
-        }
-        else {
-            mgr->client_list[i].display_option = ODD_EVEN;
-        }
-        for (uint8_t j = 0; j < mgr->client_list[i].number_ads; j++){
-            if (mgr->client_list[i].billboards[j].effect == 0){
-                mgr->client_list[i].billboards[j].effect = TEXT;
-            }else if (mgr->client_list[i].billboards[j].effect == 1){
-                mgr->client_list[i].billboards[j].effect = SCROLL;
-            }else {
-                mgr->client_list[i].billboards[j].effect = BLINK;
-            }
-        }
-    } */
 }
 
 void add_clients(client_manager *mgr){

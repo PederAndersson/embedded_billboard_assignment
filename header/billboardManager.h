@@ -9,20 +9,12 @@ typedef enum  {
     SWITCH
 } mode;
 
-
-typedef enum {
-    HARRY,
-    FARMOR,
-    PETTER,
-    LÅNGBEN,
-    IOT    
-} clients;
-
 typedef struct {
     uint32_t minutes_ms;
     uint32_t text_ms;
     uint32_t scroll_ms;
-    uint32_t blink_ms;
+    uint32_t blink_on_ms;
+    uint32_t blink_off_ms;
     uint32_t client_ms;
 } time;
 
@@ -32,6 +24,7 @@ typedef struct {
     uint8_t billboard_index;
     time t;
     uint32_t min;
+    uint8_t blink_on;
 } player;
 
 typedef enum selection_option soption;
