@@ -20,17 +20,15 @@ client_manager mgr;
 player play;
 
 int main(void) {
-    Timer0_init(); 
+    Timer0_init();
     lcd_init();
     srand_init();
     add_clients(&mgr);
     player_init(&play,&mgr, current_time);
-    
     sei();
-
     while(1) {
     current_time = millis();
-        run(&mgr,&play, current_time);
+    run(&mgr,&play, current_time);
     }
     
     return 0;

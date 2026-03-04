@@ -11,7 +11,8 @@ void player_init(player *play, client_manager *mgr, uint32_t now){
     play->client = get_current_client(mgr);
     play->billboard_index = get_billboard_index(play);
     play->t.client_ms = now;
-    play->t.blink_ms = now;
+    play->t.blink_on_ms = now;
+    play->blink_on = 1;
     play->t.minutes_ms = now;
     play->t.scroll_ms = now;
     play->t.text_ms = now;
@@ -27,8 +28,8 @@ void player_state(client_manager *mgr, player *p, uint32_t now){
     }
      
     else if (p->mode == SWITCH){
+        lcd_clear();
         if ((uint32_t)(now - p->t.client_ms)>= mgr->intervals.switch_duration){
-            lcd_clear();
             p->mode = SHOW_COMMERCIAL;
             next_client(mgr);
             p->client = get_current_client(mgr);
@@ -61,7 +62,7 @@ uint8_t  get_billboard_index(player *play){
 
     uint8_t billboard_index = 0;
     if (available_count > 0){
-        billboard_index = available_billboards[rand() % available_count];
+        billboard_index = available_billboards[(rand() ^ play->t.client_ms) % available_count];
     }
 
     return billboard_index;
@@ -78,23 +79,23 @@ void set_minutes(client_manager *mgr, player *play, uint32_t now){
 void print_client_name(player *play){
     switch(play->client->client_id){
         case 1: {
-            lcd_print(0, "Hederlige Harry.");
+            lcd_printf(0, "Hederlige Harry.");
             break;
         }
         case 2: {
-            lcd_print(0, "Farmor Anka.");
+            lcd_printf(0, "Farmor Anka.");
             break;
         }
         case 3: {
-            lcd_print(0, "Svarte Petter.");
+            lcd_printf(0, "Svarte Petter.");
             break;
         }
         case 4: {
-            lcd_print(0, "Janne Långben.");
+            lcd_printf(0, "Janne Långben.");
             break;
         }
         case 5: {
-            lcd_print(0, "IoT reklambyrå.");
+            lcd_printf(0, "IoT reklambyrå.");
             break;
         }
     }
@@ -121,7 +122,7 @@ void print_billboard(client_manager *mgr, player *play, uint32_t now){
         switch (play->client->billboards[play->billboard_index].effect){
             case TEXT: {
                 print_client_name(play);
-                if (now - play->t.text_ms >= mgr->intervals.scroll_tick){
+                if (now - play->t.text_ms >= mgr->intervals.text_switch){
                     lcd_print_text(1, play->client->billboards[play->billboard_index].billboard);
                     play->t.text_ms = now;
                 }
@@ -129,13 +130,18 @@ void print_billboard(client_manager *mgr, player *play, uint32_t now){
             }
             case BLINK: {
                 print_client_name(play);
-                if(now - play->t.blink_ms >= mgr->intervals.blink_on){
-                    lcd_print_blink(1, play->client->billboards[play->billboard_index].billboard);
-                    play->t.blink_ms = now;
-                }
-                else if(now - play->t.blink_ms >= mgr->intervals.blink_off){
-                    lcd_print_blink(1, play->client->billboards[play->billboard_index].billboard);
-                    play->t.blink_ms = now;
+                if (play->blink_on == 1 && now - play->t.blink_on_ms >= BLINK_ON){
+                    lcd_set_cursor(0, 1);
+                    for (uint8_t i = 0; i < LCD_COL_COUNT; i++){
+                        lcd_write(' ');
+                    }
+                    play->t.blink_on_ms = now;
+                    play->blink_on = 0;
+                    
+                } else if (play->blink_on == 0 && now - play->t.blink_on_ms >= BLINK_OFF){
+                    lcd_print_text(1, play->client->billboards[play->billboard_index].billboard);
+                    play->t.blink_on_ms = now;
+                    play->blink_on = 1;
                 }
                 break;
             }
