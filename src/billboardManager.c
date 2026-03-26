@@ -104,16 +104,16 @@ void print_client_name(player *play){
 void print_billboard(client_manager *mgr, player *play, uint32_t now){
     
     if (play->client->display_option == ODD_EVEN){
-        if (play->min%2){
+        if (play->min%2 == 0){
             print_client_name(play);
             if (now - play->t.scroll_ms >= mgr->intervals.scroll_tick){
-                lcd_print_scroll(1, play->client->billboards[play->billboard_index].billboard);
+                lcd_print_scroll(1, play->client->billboards[0].billboard);
                 play->t.scroll_ms = now;
             }
         }else {
             print_client_name(play);
-            if (now - play->t.text_ms >= mgr->intervals.scroll_tick){
-                lcd_print_text(1, play->client->billboards[play->billboard_index].billboard);
+            if (now - play->t.text_ms >= mgr->intervals.text_switch){
+                lcd_print_text(1, play->client->billboards[1].billboard);
                 play->t.text_ms = now;
             }
         }

@@ -16,7 +16,7 @@ LDFLAGS = -mmcu=${MCU}
 TARGET = main
 BUILD_DIR = build
 PROGRAMMER = arduino
-PORT = /dev/ttyUSB0
+PORT = /dev/ttyACM0
 BAUD = 115200
 
 

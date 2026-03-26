@@ -10,7 +10,7 @@ static char parse_buffer[PARSE_BUFFER+1];
 static uint32_t total_price(client *c, client_manager * mgr){
         return mgr->total_income += c->price;
 }
-
+//should be refactored to a switchstatement 
 static client parse_client_info(uint8_t row){
     client client;
     uint8_t i = 0;
