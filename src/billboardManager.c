@@ -21,7 +21,7 @@ void player_init(player *play, client_manager *mgr, uint32_t now){
 void player_state(client_manager *mgr, player *p, uint32_t now){
 
     if (p->mode == SHOW_COMMERCIAL){
-        if ((uint32_t)(now - p->t.client_ms) >= 5000){
+        if ((uint32_t)(now - p->t.client_ms) >= mgr->intervals.billboard_duration){
             p->mode = SWITCH;
             p->t.client_ms = now;
         }  
