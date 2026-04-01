@@ -20,7 +20,8 @@ static client parse_client_info(uint8_t row){
     client.price = 0;
     client.client_id = 0;
     client.number_ads = 0;
-
+    if (row >= rows_count) {return client;}
+    
     const char* row_ptr = (const char*)pgm_read_ptr(&list[row]);
     while (i < PARSE_BUFFER){
         char c = (char)pgm_read_byte(row_ptr+i);
@@ -44,7 +45,7 @@ static client parse_client_info(uint8_t row){
     char *dest = client.client_name;
     uint16_t dest_max = sizeof(client.client_name);
 
-    for (uint16_t k = 0; ; k++){
+    for (uint16_t k = 0; k < PARSE_BUFFER; k++){
         char c = parse_buffer[k];
 
         if (c == ',' || c == '\0'){
@@ -72,7 +73,7 @@ static client parse_client_info(uint8_t row){
                 st = S_EFFECT;
             }else if (st == S_EFFECT){
                 client.billboards[effect_idx].effect = effect;
-                if (effect_idx < ads - 1){
+                if (ads > 0 && effect_idx < ads - 1){
                     effect_idx++;                
                 }
                 else {
@@ -152,6 +153,7 @@ void next_client(client_manager *mgr){
 
     mgr->previous_client = mgr->current_client;
     uint32_t adjusted_total = mgr->total_income - mgr->previous_client->price;
+    if (adjusted_total == 0){ adjusted_total = 1;}
     uint32_t client_slot_number = rand() % adjusted_total;
     uint32_t client_prices = 0;
     client* next_client = NULL;
@@ -165,7 +167,9 @@ void next_client(client_manager *mgr){
             }
         }
     }
-    mgr->current_client = next_client;
+    if (next_client != NULL){
+        mgr->current_client = next_client;
+    }
 }
 
 
