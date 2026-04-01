@@ -14,7 +14,7 @@
 
 int main(void) {
     uint32_t current_time = 0;
-    client_manager mgr;
+    static client_manager mgr;
     player play;
     Timer0_init();
     lcd_init();
