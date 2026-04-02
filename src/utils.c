@@ -5,6 +5,7 @@
 #include "util/delay.h"
 
 typedef struct offset_variables{
+    // Shared render state for long-text paging, scrolling, and blinking effects.
     uint8_t offset;
     uint8_t blink;
     uint8_t second_half_idx;
@@ -132,6 +133,7 @@ void lcd_print_scroll(uint8_t row, char *str){
        return;
     }
     
+    // Wrap around the string so long messages scroll continuously instead of stopping at the end.
     for (uint8_t i = 0; i < LCD_COL_COUNT; i++){
         uint8_t idx = (v.offset + i) % line_len;
         lcd_write(line[idx]);
@@ -164,6 +166,7 @@ void lcd_print_text(uint8_t row, char *str){
         v.offset = 0;
         return;
     }
+    // Long static text is shown in two pages: first 16 chars, then the remaining tail.
     if (v.offset > 0){
         uint8_t idx = 0;
         for (uint8_t i = v.second_half_idx; line[i] != '\0'; i++){

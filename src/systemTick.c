@@ -9,6 +9,7 @@ void Timer0_init(void) {
     TCNT0 = 0;
     TCCR0A = (1 << WGM01);
     TCCR0B = (1 << CS00) | (1 << CS01);
+    // 16 MHz / 64 = 250 kHz, so OCR0A = 249 generates a 1 ms compare match.
     OCR0A = 249;
     TIMSK0 = (1 << OCIE0A);
     

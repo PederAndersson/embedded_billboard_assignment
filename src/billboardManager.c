@@ -20,6 +20,7 @@ void player_init(player *play, client_manager *mgr, uint32_t now){
 
 void player_state(client_manager *mgr, player *p, uint32_t now){
 
+    // Two-state scheduler: show one client for a period, then blank during switch-over.
     if (p->mode == SHOW_COMMERCIAL){
         if ((uint32_t)(now - p->t.client_ms) >= mgr->intervals.billboard_duration){
             p->mode = SWITCH;
@@ -35,6 +36,7 @@ void player_state(client_manager *mgr, player *p, uint32_t now){
             p->client = get_current_client(mgr);
             p->billboard_index = get_billboard_index(p);
             p->t.client_ms = now;
+            // Latch the current minute so odd/even clients stay consistent for this slot.
             p->min = minutes;
             reset_offset();
         }
@@ -54,6 +56,7 @@ uint8_t  get_billboard_index(player *play){
     uint8_t available_billboards[NUMBER_ADS + 1];
     uint8_t available_count = 0;
 
+    // Only choose from populated billboard slots; some clients have fewer than NUMBER_ADS + 1 ads.
     for (uint8_t i = 0; i <= NUMBER_ADS; i++){
         if (play->client->billboards[i].billboard[0] != '\0'){
             available_billboards[available_count++] = i;
@@ -104,6 +107,7 @@ void print_client_name(player *play){
 void print_billboard(client_manager *mgr, player *play, uint32_t now){
     
     if (play->client->display_option == ODD_EVEN){
+        // Odd/even mode ignores effect selection and alternates between ad 0 and ad 1 by minute parity.
         if (play->min%2 == 0){
             print_client_name(play);
             if (now - play->t.scroll_ms >= mgr->intervals.scroll_tick){

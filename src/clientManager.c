@@ -10,7 +10,7 @@ static char parse_buffer[PARSE_BUFFER+1];
 static uint32_t total_price(client *c, client_manager * mgr){
         return mgr->total_income += c->price;
 }
-//should be refactored to a switchstatement 
+// Parse one CSV row from PROGMEM into a runtime client struct.
 static client parse_client_info(uint8_t row){
     client client;
     uint8_t i = 0;
@@ -45,6 +45,7 @@ static client parse_client_info(uint8_t row){
     char *dest = client.client_name;
     uint16_t dest_max = sizeof(client.client_name);
 
+    // Field order: name, billboards..., price, ad count, id, effects..., selection.
     for (uint16_t k = 0; k < PARSE_BUFFER; k++){
         char c = parse_buffer[k];
 
@@ -53,6 +54,7 @@ static client parse_client_info(uint8_t row){
                 if (dest_max > 0){dest[cpy_idx] = '\0';}
             }
 
+            // Each comma advances the parser to the next logical field.
             if (st == S_CLIENT){
                 st = S_BILLBOARD;
                 dest = client.billboards[ad_idx].billboard;
@@ -152,6 +154,7 @@ void add_clients(client_manager *mgr){
 void next_client(client_manager *mgr){
 
     mgr->previous_client = mgr->current_client;
+    // Exclude the previous client so the same ad never appears twice in a row.
     uint32_t adjusted_total = mgr->total_income - mgr->previous_client->price;
     if (adjusted_total == 0){ adjusted_total = 1;}
     uint32_t client_slot_number = rand() % adjusted_total;
@@ -161,6 +164,7 @@ void next_client(client_manager *mgr){
     for (uint8_t i = 0; i < rows_count; i++){
         if (&mgr->client_list[i] != mgr->previous_client){
             client_prices += mgr->client_list[i].price;
+            // First client whose cumulative price crosses the slot wins the draw.
             if (client_prices > client_slot_number){
                 next_client = &mgr->client_list[i];
                 break;
